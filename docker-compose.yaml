@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16
+    container_name: olist_postgres
+    environment:
+      POSTGRES_USER: training_user
+      POSTGRES_PASSWORD: Training_pass
+      POSTGRES_DB: olist_analytics
+    ports:
+      - "5437:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

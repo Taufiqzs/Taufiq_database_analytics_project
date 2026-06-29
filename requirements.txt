@@ -1,0 +1,6 @@
+pandas
+numpy
+sqlalchemy
+psycoph2-binary
+pyarrow
+python-dotenv
