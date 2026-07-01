@@ -1,6 +1,7 @@
 pandas
 numpy
 sqlalchemy
-psycoph2-binary
+psycopg2-binary
 pyarrow
 python-dotenv
+requests

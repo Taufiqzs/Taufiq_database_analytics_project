@@ -1,1 +1,10 @@
 
+.env
+__pycache__/
+*.pyc
+.venv_wsl/
+Data/Raw_data/*.parquet
+Data/Raw_data/*.csv
+logs/*.log
+Data/Data_processed/*.csv
+

@@ -1,15 +1,22 @@
 services:
   db:
     image: postgres:16
-    container_name: olist_postgres
+    container_name: nyc_taxi_postgres
     environment:
-      POSTGRES_USER: training_user
-      POSTGRES_PASSWORD: Training_pass
-      POSTGRES_DB: olist_analytics
+      POSTGRES_USER: ${POSTGRES_USER:-training_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-Training_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-nyc_taxi_analytics}
+      DATA_PATH: ${DATA_PATH:-/project/data/raw}
     ports:
-      - "5437:5432"
+      - "${POSTGRES_PORT:-5437}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./:/project
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
 volumes:
   postgres_data:
