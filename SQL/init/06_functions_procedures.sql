@@ -1,28 +1,30 @@
 -- ==========================================================================
--- 06_functions_procedures.sql — Audit Logging Functions & Procedures
+-- 06_functions_procedures.sql — Fungsi & Prosedur Audit Logging
 --
--- Purpose:
---   Provides reusable PL/pgSQL routines for recording pipeline execution
---   steps in the audit schema.
+-- Tujuan:
+--   Menyediakan rutin PL/pgSQL yang dapat digunakan kembali untuk
+--   merekam langkah eksekusi pipeline di skema audit.
 --
--- Objects:
---   FUNCTION  audit.log_pipeline_step(...)  – Insert a single load-audit row.
---   PROCEDURE audit.finish_pipeline_run(...) – Mark a pipeline run as finished.
+-- Objek:
+--   FUNCTION  audit.log_pipeline_step(...)  – Menyisipkan satu baris
+--     load-audit.
+--   PROCEDURE audit.finish_pipeline_run(...) – Menandai pipeline run
+--     sebagai selesai.
 -- ==========================================================================
 
 -- ------------------------------------------------------------------
 -- audit.log_pipeline_step (FUNCTION)
 --
--- Inserts a row into audit.load_audit recording a single processing
--- step within a pipeline run.
+-- Menyisipkan baris ke audit.load_audit yang mencatat satu langkah
+-- pemrosesan dalam pipeline run.
 --
--- Parameters:
---   p_run_id      – FK referencing audit.pipeline_run.
---   p_layer_name  – The data layer (e.g. 'bronze', 'silver', 'gold').
---   p_object_name – The table or object being processed.
---   p_row_count   – Number of rows affected / loaded.
---   p_status      – 'SUCCESS' or 'FAILED'.
---   p_message     – Optional additional context or error message.
+-- Parameter:
+--   p_run_id      – FK yang merujuk ke audit.pipeline_run.
+--   p_layer_name  – Layer data (mis. 'bronze', 'silver', 'gold').
+--   p_object_name – Tabel atau objek yang diproses.
+--   p_row_count   – Jumlah baris yang terpengaruh / dimuat.
+--   p_status      – 'SUCCESS' atau 'FAILED'.
+--   p_message     – Konteks tambahan atau pesan error opsional.
 -- ------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION audit.log_pipeline_step(
     p_run_id BIGINT,
@@ -55,13 +57,13 @@ $$ LANGUAGE plpgsql;
 -- ------------------------------------------------------------------
 -- audit.finish_pipeline_run (PROCEDURE)
 --
--- Updates the corresponding audit.pipeline_run row with the final
--- status, a finish timestamp, and an optional message.
+-- Memperbarui baris audit.pipeline_run yang sesuai dengan status
+-- akhir, timestamp selesai, dan pesan opsional.
 --
--- Parameters:
---   p_run_id  – The run to finalise.
---   p_status  – Final status ('SUCCESS' or 'FAILED').
---   p_message – Optional summary or error description.
+-- Parameter:
+--   p_run_id  – Run yang akan diselesaikan.
+--   p_status  – Status akhir ('SUCCESS' atau 'FAILED').
+--   p_message – Ringkasan atau deskripsi error opsional.
 -- ------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE audit.finish_pipeline_run(
     p_run_id BIGINT,

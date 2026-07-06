@@ -1,22 +1,22 @@
 -- ==========================================================================
--- 05_views.sql — Gold Layer Convenience Views
+-- 05_views.sql — View Kemudahan Layer Gold
 --
--- Purpose:
---   Creates SQL views on top of silver and gold tables to provide
---   user-friendly abstractions for reporting and ad-hoc analysis.
+-- Tujuan:
+--   Membuat SQL view di atas tabel silver dan gold untuk menyediakan
+--   abstraksi yang ramah pengguna untuk pelaporan dan analisis ad-hoc.
 --
--- Views:
---   gold.vw_trip_enriched       – Every cleaned trip with zone names.
---   gold.vw_daily_trip_summary  – Alias for gold.daily_trip_summary.
---   gold.vw_zone_performance    – Zone summary with dropoff counts added.
+-- View:
+--   gold.vw_trip_enriched       – Setiap trip bersih dengan nama zona.
+--   gold.vw_daily_trip_summary  – Alias untuk gold.daily_trip_summary.
+--   gold.vw_zone_performance    – Ringkasan zona dengan jumlah dropoff.
 -- ==========================================================================
 
 -- ------------------------------------------------------------------
 -- gold.vw_trip_enriched
 --
--- Joins every cleaned trip with pickup and dropoff zone details
--- (borough, zone name, service_zone). This is the denormalised,
--- analyst-friendly view of the trip data.
+-- Menggabungkan setiap trip bersih dengan detail zona pickup dan
+-- dropoff (borough, nama zona, service_zone). Ini adalah view data
+-- trip yang didenormalisasi dan ramah analis.
 -- ------------------------------------------------------------------
 CREATE OR REPLACE VIEW gold.vw_trip_enriched AS
 SELECT
@@ -51,8 +51,8 @@ JOIN silver.taxi_zones dz ON dz.location_id = t.dropoff_location_id;
 -- ------------------------------------------------------------------
 -- gold.vw_daily_trip_summary
 --
--- Simple passthrough view over gold.daily_trip_summary.
--- Useful for tools / ORMs that prefer views over tables.
+-- View passthrough sederhana di atas gold.daily_trip_summary.
+-- Berguna untuk alat / ORM yang lebih suka view daripada tabel.
 -- ------------------------------------------------------------------
 CREATE OR REPLACE VIEW gold.vw_daily_trip_summary AS
 SELECT *
@@ -61,9 +61,10 @@ FROM gold.daily_trip_summary;
 -- ------------------------------------------------------------------
 -- gold.vw_zone_performance
 --
--- Extends gold.zone_performance_summary with a total_dropoff_trips
--- column computed from silver.taxi_trips_cleaned, giving a more
--- complete picture of each zone's activity (both arrivals and departures).
+-- Memperluas gold.zone_performance_summary dengan kolom
+-- total_dropoff_trips yang dihitung dari silver.taxi_trips_cleaned,
+-- memberikan gambaran yang lebih lengkap tentang aktivitas setiap
+-- zona (kedatangan dan keberangkatan).
 -- ------------------------------------------------------------------
 CREATE OR REPLACE VIEW gold.vw_zone_performance AS
 SELECT

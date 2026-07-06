@@ -1,4 +1,4 @@
-# New York Taxi Database Analytics
+﻿# New York Taxi Database Analytics
 
 Capstone Project 2 ini membangun database analytics untuk data New York Taxi Januari 2026. Project ini melanjutkan hasil extract dari Capstone Project 1 ke PostgreSQL, lalu menerapkan medallion architecture: bronze, silver, dan gold.
 
@@ -28,12 +28,26 @@ taufiq_database_analytics/
 │   ├── Raw_Data/
 │   └── Data_processed/
 ├── Documentation/
-│
+│   ├── database_analytics_erd.drawio
+│   ├── database_analytics_erd.png
+│   ├── erd.md
+│   ├── insight_report.md
+│   ├── daily_trip_summary_*.html
+│   ├── ranked_zones_*.html
+│   ├── zone_duration_*.html
+│   └── zone_performance_summary_*.html
 ├── SQL/
 │   ├── init/
-│   │
+│   │   ├── 01_schema.sql
+│   │   ├── 02_bronze_load.sql
+│   │   ├── 03_silver_transform.sql
+│   │   ├── 04_gold_mart.sql
+│   │   ├── 05_views.sql
+│   │   └── 06_functions_procedures.sql
 │   └── queries/
-│
+│       ├── 01_business_questions.sql
+│       ├── 02_window_analysis.sql
+│       └── 03_transaction_demo.sql
 ├── Scripts/
 │   ├── database.py
 │   ├── extract_data.py
@@ -42,9 +56,8 @@ taufiq_database_analytics/
 │   ├── query_runner.py
 │   └── run_database_pipeline.sh
 ├── docker-compose.yaml
-├── .gitignore.txt
 ├── requirements.txt
-└── README.MD
+└── README.md
 ```
 
 ## Data Source
@@ -174,7 +187,7 @@ Constraint yang digunakan meliputi:
 - check constraint untuk nilai amount non-negatif dan hour yang valid
 - unique constraint untuk mencegah duplicate trip loading
 
-Penjelasan hubungan antar tabel dapat dilihat di `Documentation/erd.md`. Versi visual yang bisa dibuka di draw.io tersedia di `Documentation/erd.drawio`.
+Penjelasan hubungan antar tabel dapat dilihat di `Documentation/erd.md`. Versi visual yang bisa dibuka di draw.io tersedia di `Documentation/database_analytics_erd.drawio`.
 
 ## Business Questions
 
@@ -201,11 +214,15 @@ File SQL di folder `SQL/queries` digunakan untuk menjawab pertanyaan bisnis sepe
 - running total revenue
 - 7-day moving average trip count
 - perbandingan menggunakan `LAG` terhadap hari sebelumnya
+- demonstrasi transaksi dan rollback (BEGIN/ROLLBACK)
 
 File query utama:
 
-- `SQL/queries/01_business_questions.sql`
-- `SQL/queries/02_window_analysis.sql`
+- `SQL/queries/01_business_questions.sql` — 11 query bisnis fundamental
+- `SQL/queries/02_window_analysis.sql` — 10 query window function lanjutan
+- `SQL/queries/03_transaction_demo.sql` — Demonstrasi transaksi database
+
+Hasil ekspor analisis tersedia di folder `Documentation/` dalam format HTML.
 
 ## Assumptions and Notes
 
@@ -214,3 +231,4 @@ File query utama:
 - Python digunakan untuk orchestration pipeline, sedangkan SQL berisi desain database, transformasi, data mart, view, dan logic analitik utama.
 - Pipeline melakukan truncate pada bronze dan membangun ulang silver/gold layer agar dapat dijalankan ulang tanpa hasil duplikat.
 - Nilai insight akhir sebaiknya dihasilkan setelah pipeline dijalankan, karena nilainya bergantung pada raw dataset yang berhasil diunduh.
+- Seluruh komentar pada file Python, SQL, dan shell script telah diterjemahkan ke Bahasa Indonesia.

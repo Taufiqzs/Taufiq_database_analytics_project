@@ -1,23 +1,25 @@
 -- ==========================================================================
--- 04_gold_mart.sql — Gold Layer Aggregated Marts
+-- 04_gold_mart.sql — Mart Teragregasi Layer Gold
 --
--- Purpose:
---   Builds the gold (presentation) layer by creating materialised summary
---   tables from the cleaned silver data. These tables are optimised for
---   dashboarding and ad-hoc analytical queries.
+-- Tujuan:
+--   Membangun layer gold (presentasi) dengan membuat tabel ringkasan
+--   material dari data silver yang telah dibersihkan. Tabel-tabel ini
+--   dioptimalkan untuk dashboard dan query analitis ad-hoc.
 --
--- Tables created:
---   gold.daily_trip_summary        – Per-day trip counts, revenue, averages.
---   gold.hourly_demand_summary     – Per-hour demand & revenue breakdown.
---   gold.zone_performance_summary  – Per-zone pickup metrics.
---   gold.payment_behavior_summary  – Payment method analysis (tip ratios).
---   gold.route_performance_summary – Pickup → dropoff route statistics.
+-- Tabel yang dibuat:
+--   gold.daily_trip_summary        – Jumlah trip per hari, revenue, rata-rata.
+--   gold.hourly_demand_summary     – Permintaan per jam & rincian revenue.
+--   gold.zone_performance_summary  – Metrik pickup per zona.
+--   gold.payment_behavior_summary  – Analisis metode pembayaran (rasio tip).
+--   gold.route_performance_summary – Statistik rute pickup → dropoff.
 --
--- Idempotent: Drops any existing gold tables/views first, then recreates.
+-- Idempoten: Menghapus tabel/view gold yang ada terlebih dahulu,
+-- kemudian membuat ulang.
 -- ==========================================================================
 
 -- ------------------------------------------------------------------
--- Step 0: Drop existing objects (clean slate for idempotent re-run)
+-- Langkah 0: Hapus objek yang ada (keadaan bersih untuk
+-- dijalankan ulang secara idempoten)
 -- ------------------------------------------------------------------
 DROP VIEW IF EXISTS gold.vw_trip_enriched;
 DROP VIEW IF EXISTS gold.vw_daily_trip_summary;
@@ -32,9 +34,9 @@ DROP TABLE IF EXISTS gold.route_performance_summary;
 -- ------------------------------------------------------------------
 -- gold.daily_trip_summary
 --
--- One row per calendar day in the dataset.
--- Provides daily totals and averages for revenue, fare, tip, distance,
--- and trip duration.
+-- Satu baris per hari kalender dalam dataset.
+-- Menyediakan total dan rata-rata harian untuk revenue, fare, tip,
+-- jarak, dan durasi perjalanan.
 -- ------------------------------------------------------------------
 CREATE TABLE gold.daily_trip_summary AS
 SELECT
@@ -54,8 +56,9 @@ ALTER TABLE gold.daily_trip_summary ADD PRIMARY KEY (pickup_date);
 -- ------------------------------------------------------------------
 -- gold.hourly_demand_summary
 --
--- One row per date + hour combination. Includes a time_period label
--- (Morning / Afternoon / Evening / Night) for convenient grouping.
+-- Satu baris per kombinasi tanggal + jam. Termasuk label time_period
+-- (Morning / Afternoon / Evening / Night) untuk pengelompokan yang
+-- mudah.
 -- ------------------------------------------------------------------
 CREATE TABLE gold.hourly_demand_summary AS
 SELECT
@@ -73,8 +76,9 @@ ALTER TABLE gold.hourly_demand_summary ADD PRIMARY KEY (pickup_date, pickup_hour
 -- ------------------------------------------------------------------
 -- gold.zone_performance_summary
 --
--- One row per taxi zone (including zones with zero pickups via LEFT JOIN).
--- Summarises pickup counts, revenue, and average fare/tip/distance.
+-- Satu baris per zona taksi (termasuk zona dengan nol pickup via
+-- LEFT JOIN). Merangkum jumlah pickup, revenue, dan rata-rata
+-- fare/tip/jarak.
 -- ------------------------------------------------------------------
 CREATE TABLE gold.zone_performance_summary AS
 SELECT
@@ -96,8 +100,8 @@ ALTER TABLE gold.zone_performance_summary ADD PRIMARY KEY (location_id);
 -- ------------------------------------------------------------------
 -- gold.payment_behavior_summary
 --
--- One row per payment type. Shows trip count, total revenue, average
--- tip, and the average tip ratio (tip / total_amount).
+-- Satu baris per tipe pembayaran. Menampilkan jumlah trip, total
+-- revenue, rata-rata tip, dan rasio tip rata-rata (tip / total_amount).
 -- ------------------------------------------------------------------
 CREATE TABLE gold.payment_behavior_summary AS
 SELECT
@@ -116,9 +120,9 @@ ALTER TABLE gold.payment_behavior_summary ADD PRIMARY KEY (payment_type);
 -- ------------------------------------------------------------------
 -- gold.route_performance_summary
 --
--- One row per unique pickup → dropoff zone pair.
--- Includes borough and zone names for both endpoints, plus aggregate
--- trip counts, revenue, duration, and distance.
+-- Satu baris per pasangan zone pickup → dropoff yang unik.
+-- Menyertakan nama borough dan zona untuk kedua endpoint, plus
+-- agregat jumlah trip, revenue, durasi, dan jarak.
 -- ------------------------------------------------------------------
 CREATE TABLE gold.route_performance_summary AS
 SELECT

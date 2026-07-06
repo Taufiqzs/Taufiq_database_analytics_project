@@ -1,14 +1,15 @@
 -- ==========================================================================
--- 02_bronze_load.sql — Bronze Layer Clean-up
+-- 02_bronze_load.sql — Pembersihan Layer Bronze
 --
--- Purpose:
---   Truncates the bronze staging tables before the Python-based bulk load.
+-- Tujuan:
+--   Memotong (truncate) tabel staging bronze sebelum pemuatan massal
+--   berbasis Python.
 --
--- Notes:
---   - The actual data loading is performed by `scripts/load_to_postgres.py`
---     using pandas `to_sql`.
---   - This script ensures the bronze tables are empty and ready to receive
---     fresh data, making the pipeline idempotent (safe to re-run).
+-- Catatan:
+--   - Pemuatan data aktual dilakukan oleh `scripts/load_to_postgres.py`
+--     menggunakan pandas `to_sql`.
+--   - Skrip ini memastikan tabel bronze kosong dan siap menerima data
+--     baru, membuat pipeline idempoten (aman untuk dijalankan ulang).
 -- ==========================================================================
 
 TRUNCATE TABLE bronze.raw_taxi_trips;

@@ -1,0 +1,97 @@
+<mxfile host="app.diagrams.net" agent="Codex">
+  <diagram id="nyc-taxi-erd" name="NYC Taxi Analytics ERD">
+    <mxGraphModel dx="1768" dy="991" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="bronze_group" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;startSize=30;" value="BRONZE - Raw Staging" vertex="1">
+          <mxGeometry height="520" width="360" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bronze_zones" parent="bronze_group" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=10;fillColor=#fff8e8;strokeColor=#d6b656;fontFamily=Consolas;" value="bronze.raw_taxi_zones&#xa;----------------------&#xa;location_id   INTEGER&#xa;borough       TEXT&#xa;zone          TEXT&#xa;service_zone  TEXT&#xa;source_file   TEXT&#xa;loaded_at     TIMESTAMPTZ" vertex="1">
+          <mxGeometry height="150" width="300" x="30" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="bronze_trips" parent="bronze_group" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=10;fillColor=#fff8e8;strokeColor=#d6b656;fontFamily=Consolas;" value="bronze.raw_taxi_trips&#xa;----------------------&#xa;vendor_id              INTEGER&#xa;tpep_pickup_datetime   TIMESTAMP&#xa;tpep_dropoff_datetime  TIMESTAMP&#xa;passenger_count        NUMERIC&#xa;trip_distance          NUMERIC&#xa;pu_location_id         INTEGER&#xa;do_location_id         INTEGER&#xa;payment_type           BIGINT&#xa;fare_amount            NUMERIC&#xa;tip_amount             NUMERIC&#xa;total_amount           NUMERIC&#xa;source_file            TEXT&#xa;loaded_at              TIMESTAMPTZ" vertex="1">
+          <mxGeometry height="230" width="300" x="30" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="silver_group" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;startSize=30;" value="SILVER - Cleaned Analytical Layer" vertex="1">
+          <mxGeometry height="980" width="490" x="460" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="silver_zones" parent="silver_group" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=10;fillColor=#eef5ff;strokeColor=#6c8ebf;fontFamily=Consolas;" value="silver.taxi_zones&#xa;----------------------&#xa;PK location_id  INTEGER&#xa;borough         TEXT&#xa;zone            TEXT&#xa;service_zone    TEXT" vertex="1">
+          <mxGeometry height="130" width="370" x="30" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="silver_trips" parent="silver_group" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=10;fillColor=#eef5ff;strokeColor=#6c8ebf;fontFamily=Consolas;" value="silver.taxi_trips_cleaned&#xa;----------------------&#xa;PK trip_id                BIGSERIAL&#xa;vendor_id                 INTEGER&#xa;pickup_datetime           TIMESTAMP&#xa;dropoff_datetime          TIMESTAMP&#xa;pickup_date               DATE&#xa;pickup_hour               INTEGER&#xa;pickup_day_name           TEXT&#xa;is_weekend                BOOLEAN&#xa;time_period               TEXT&#xa;trip_duration_minutes     NUMERIC(12,2)&#xa;passenger_count           INTEGER&#xa;trip_distance             NUMERIC(12,2)&#xa;FK pickup_location_id     INTEGER&#xa;FK dropoff_location_id    INTEGER&#xa;payment_type              BIGINT&#xa;payment_label             TEXT&#xa;fare_amount               NUMERIC(12,2)&#xa;tip_amount                NUMERIC(12,2)&#xa;total_amount              NUMERIC(12,2)&#xa;loaded_at                 TIMESTAMPTZ" vertex="1">
+          <mxGeometry height="380" width="420" x="30" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="silver_quality" parent="silver_group" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=10;fillColor=#eef5ff;strokeColor=#6c8ebf;fontFamily=Consolas;" value="silver.data_quality_issues&#xa;----------------------&#xa;PK issue_id              BIGSERIAL&#xa;error_type               TEXT&#xa;error_description        TEXT&#xa;vendor_id                INTEGER&#xa;pickup_datetime          TIMESTAMP&#xa;dropoff_datetime         TIMESTAMP&#xa;pickup_location_id       INTEGER&#xa;dropoff_location_id      INTEGER&#xa;passenger_count          NUMERIC&#xa;trip_distance            NUMERIC&#xa;fare_amount              NUMERIC&#xa;tip_amount               NUMERIC&#xa;total_amount             NUMERIC&#xa;source_file              TEXT&#xa;logged_at                TIMESTAMPTZ" vertex="1">
+          <mxGeometry height="290" width="420" x="30" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="gold_group" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;startSize=30;" value="GOLD - Reporting Marts" vertex="1">
+          <mxGeometry height="1130" width="600" x="1130" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="gold_daily" parent="gold_group" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=10;fillColor=#edf8ea;strokeColor=#82b366;fontFamily=Consolas;" value="gold.daily_trip_summary&#xa;----------------------&#xa;PK pickup_date        DATE&#xa;total_trips           BIGINT&#xa;total_revenue         NUMERIC&#xa;avg_revenue           NUMERIC&#xa;avg_fare              NUMERIC&#xa;avg_tip               NUMERIC&#xa;avg_distance          NUMERIC&#xa;avg_duration_minutes  NUMERIC" vertex="1">
+          <mxGeometry height="150" width="450" x="30" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="gold_hourly" parent="gold_group" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=10;fillColor=#edf8ea;strokeColor=#82b366;fontFamily=Consolas;" value="gold.hourly_demand_summary&#xa;----------------------&#xa;PK pickup_date        DATE&#xa;PK pickup_hour        INTEGER&#xa;time_period           TEXT&#xa;total_trips           BIGINT&#xa;total_revenue         NUMERIC&#xa;avg_duration_minutes  NUMERIC" vertex="1">
+          <mxGeometry height="130" width="450" x="30" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="gold_zone" parent="gold_group" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=10;fillColor=#edf8ea;strokeColor=#82b366;fontFamily=Consolas;" value="gold.zone_performance_summary&#xa;----------------------&#xa;PK location_id        INTEGER&#xa;borough               TEXT&#xa;zone                  TEXT&#xa;total_pickup_trips    BIGINT&#xa;total_revenue         NUMERIC&#xa;avg_fare              NUMERIC&#xa;avg_tip               NUMERIC&#xa;avg_distance          NUMERIC" vertex="1">
+          <mxGeometry height="150" width="450" x="30" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="gold_payment" parent="gold_group" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=10;fillColor=#edf8ea;strokeColor=#82b366;fontFamily=Consolas;" value="gold.payment_behavior_summary&#xa;----------------------&#xa;PK payment_type       BIGINT&#xa;payment_label         TEXT&#xa;total_trips           BIGINT&#xa;total_revenue         NUMERIC&#xa;avg_revenue           NUMERIC&#xa;avg_tip               NUMERIC&#xa;avg_tip_ratio         NUMERIC" vertex="1">
+          <mxGeometry height="130" width="450" x="40" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="gold_route" parent="gold_group" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=10;fillColor=#edf8ea;strokeColor=#82b366;fontFamily=Consolas;" value="gold.route_performance_summary&#xa;----------------------&#xa;PK pickup_location_id   INTEGER&#xa;PK dropoff_location_id  INTEGER&#xa;pickup_borough          TEXT&#xa;pickup_zone             TEXT&#xa;dropoff_borough         TEXT&#xa;dropoff_zone            TEXT&#xa;total_trips             BIGINT&#xa;total_revenue           NUMERIC&#xa;avg_duration_minutes    NUMERIC&#xa;avg_distance            NUMERIC" vertex="1">
+          <mxGeometry height="200" width="470" x="30" y="780" as="geometry" />
+        </mxCell>
+        <mxCell id="audit_group" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;startSize=30;" value="AUDIT - Pipeline Tracking" vertex="1">
+          <mxGeometry height="600" width="360" x="40" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="audit_run" parent="audit_group" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=10;fillColor=#fdeceb;strokeColor=#b85450;fontFamily=Consolas;" value="audit.pipeline_run&#xa;----------------------&#xa;PK run_id     BIGSERIAL&#xa;run_name      TEXT&#xa;status        TEXT&#xa;started_at    TIMESTAMPTZ&#xa;finished_at   TIMESTAMPTZ&#xa;message       TEXT" vertex="1">
+          <mxGeometry height="170" width="300" x="30" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e_audit" edge="1" parent="1" source="audit_run" style="endArrow=ERmany;startArrow=ERone;html=1;rounded=0;strokeColor=#b85450;" target="audit_load" value="1 to many">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_bronze_zone_silver_zone" edge="1" parent="1" source="bronze_zones" style="endArrow=block;html=1;rounded=0;strokeColor=#d6b656;" target="silver_zones" value="cleans to">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_bronze_trips_silver_trips" edge="1" parent="1" source="bronze_trips" style="endArrow=block;html=1;rounded=0;strokeColor=#6c8ebf;" target="silver_trips" value="valid rows">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_bronze_trips_quality" edge="1" parent="1" source="bronze_trips" style="endArrow=block;html=1;rounded=0;strokeColor=#6c8ebf;" target="silver_quality" value="rejected rows">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_zones_pickup" edge="1" parent="1" source="silver_zones" style="endArrow=ERmany;startArrow=ERone;html=1;rounded=0;strokeColor=#6c8ebf;" target="silver_trips" value="pickup_location_id">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_zones_dropoff" edge="1" parent="1" source="silver_zones" style="endArrow=ERmany;startArrow=ERone;html=1;rounded=0;strokeColor=#6c8ebf;dashed=1;" target="silver_trips" value="dropoff_location_id">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_daily" edge="1" parent="1" style="endArrow=block;html=1;rounded=0;strokeColor=#82b366;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="gold_daily" value="by date">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="900" y="312.8070175438593" as="sourcePoint" />
+            <mxPoint x="1330" y="130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_hourly" edge="1" parent="1" source="silver_trips" style="endArrow=block;html=1;rounded=0;strokeColor=#82b366;" target="gold_hourly" value="by date + hour">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_zone" edge="1" parent="1" source="silver_trips" style="endArrow=block;html=1;rounded=0;strokeColor=#82b366;" target="gold_zone" value="by pickup zone">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_zone_dim" edge="1" parent="1" source="silver_zones" style="endArrow=block;html=1;rounded=0;strokeColor=#82b366;dashed=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" target="gold_zone" value="zone attributes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_payment" edge="1" parent="1" source="silver_trips" style="endArrow=block;html=1;rounded=0;strokeColor=#82b366;" target="gold_payment" value="by payment type">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_route" edge="1" parent="1" source="silver_trips" style="endArrow=block;html=1;rounded=0;strokeColor=#82b366;" target="gold_route" value="by pickup to dropoff">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="audit_load" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=10;fillColor=#fdeceb;strokeColor=#b85450;fontFamily=Consolas;" value="audit.load_audit&#xa;----------------------&#xa;PK audit_id   BIGSERIAL&#xa;FK run_id     BIGINT&#xa;layer_name    TEXT&#xa;object_name   TEXT&#xa;row_count     BIGINT&#xa;status        TEXT&#xa;message       TEXT&#xa;logged_at     TIMESTAMPTZ" vertex="1">
+          <mxGeometry height="180" width="300" x="70" y="990" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

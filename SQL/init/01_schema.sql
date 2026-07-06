@@ -1,22 +1,22 @@
 -- ==========================================================================
--- 01_schema.sql — Database Schema Definition
+-- 01_schema.sql — Definisi Skema Database
 --
--- Purpose:
---   Defines the complete database schema for the NYC Taxi Analytics
---   pipeline. Creates all schemas (bronze, silver, gold, audit) and
---   their corresponding tables.
+-- Tujuan:
+--   Mendefinisikan skema database lengkap untuk pipeline NYC Taxi Analytics.
+--   Membuat semua skema (bronze, silver, gold, audit) dan tabel-tabel yang
+--   sesuai.
 --
--- Schema overview:
---   audit  – Pipeline run logging and load-audit records.
---   bronze – Staging tables that mirror the raw input files (Parquet/CSV).
---   silver – Cleaned, validated, and enriched trip & zone data.
---   gold   – Aggregated summary marts for reporting (created in 04_gold_mart.sql).
+-- Ringkasan Skema:
+--   audit  – Log eksekusi pipeline dan catatan audit load.
+--   bronze – Tabel staging yang mencerminkan file input mentah (Parquet/CSV).
+--   silver – Data perjalanan & zona yang dibersihkan, divalidasi, dan diperkaya.
+--   gold   – Ringkasan mart teragregasi untuk pelaporan (dibuat di 04_gold_mart.sql).
 --
--- Idempotent: Uses IF NOT EXISTS so it can be run safely multiple times.
+-- Idempoten/idempotent: Menggunakan IF NOT EXISTS sehingga aman dijalankan berkali-kali.
 -- ==========================================================================
 
 -- ------------------------------------------------------------------
--- Layer schemas
+-- Skema layer
 -- ------------------------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS bronze;
 CREATE SCHEMA IF NOT EXISTS silver;
@@ -26,7 +26,7 @@ CREATE SCHEMA IF NOT EXISTS audit;
 -- ------------------------------------------------------------------
 -- audit.pipeline_run
 --
--- Records the status and timing of each pipeline execution.
+-- Mencatat status dan waktu setiap eksekusi pipeline.
 -- ------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS audit.pipeline_run (
     run_id      BIGSERIAL PRIMARY KEY,
@@ -40,8 +40,8 @@ CREATE TABLE IF NOT EXISTS audit.pipeline_run (
 -- ------------------------------------------------------------------
 -- audit.load_audit
 --
--- Captures per-step details for a pipeline run: which layer/object was
--- loaded, how many rows were processed, and whether the step succeeded.
+-- Menangkap detail per-langkah untuk pipeline run: layer/objek mana yang
+-- dimuat, berapa baris yang diproses, dan apakah langkah berhasil.
 -- ------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS audit.load_audit (
     audit_id    BIGSERIAL PRIMARY KEY,
@@ -57,9 +57,9 @@ CREATE TABLE IF NOT EXISTS audit.load_audit (
 -- ------------------------------------------------------------------
 -- bronze.raw_taxi_trips
 --
--- Staging table for yellow taxi trip records as loaded from the
--- NYC TLC Parquet file. No transformations are applied at this stage;
--- the data is stored in its raw form (including potential quality issues).
+-- Tabel staging untuk data perjalanan taksi kuning yang dimuat dari
+-- file Parquet NYC TLC. Tidak ada transformasi yang diterapkan;
+-- data disimpan dalam bentuk mentah (termasuk potensi masalah kualitas).
 -- ------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS bronze.raw_taxi_trips (
     vendor_id              INTEGER,
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS bronze.raw_taxi_trips (
 -- ------------------------------------------------------------------
 -- bronze.raw_taxi_zones
 --
--- Staging table for the NYC TLC taxi zone lookup CSV data.
+-- Tabel staging untuk data CSV lookup zona taksi NYC TLC.
 -- ------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS bronze.raw_taxi_zones (
     location_id  INTEGER,
@@ -103,8 +103,8 @@ CREATE TABLE IF NOT EXISTS bronze.raw_taxi_zones (
 -- ------------------------------------------------------------------
 -- silver.taxi_zones
 --
--- Cleaned and deduplicated taxi zone reference table.
--- Each location_id acts as a foreign-key target for trip records.
+-- Tabel referensi zona taksi yang dibersihkan dan di-deduplikasi.
+-- Setiap location_id bertindak sebagai target foreign key untuk data perjalanan.
 -- ------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS silver.taxi_zones (
     location_id  INTEGER PRIMARY KEY,
@@ -116,10 +116,10 @@ CREATE TABLE IF NOT EXISTS silver.taxi_zones (
 -- ------------------------------------------------------------------
 -- silver.taxi_trips_cleaned
 --
--- Validated taxi trips that passed all quality checks. Derived columns
--- such as pickup_date, pickup_hour, day name, time_period, and
--- trip_duration_minutes are pre-computed for analytical convenience.
--- A unique constraint prevents duplicate loading.
+-- Perjalanan taksi yang tervalidasi dan lolos semua pemeriksaan kualitas.
+-- Kolom turunan seperti pickup_date, pickup_hour, nama hari, time_period,
+-- dan trip_duration_minutes telah dihitung sebelumnya untuk kemudahan analisis.
+-- Constraint unique mencegah pemuatan duplikat.
 -- ------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS silver.taxi_trips_cleaned (
     trip_id              BIGSERIAL PRIMARY KEY,
@@ -157,9 +157,9 @@ CREATE TABLE IF NOT EXISTS silver.taxi_trips_cleaned (
 -- ------------------------------------------------------------------
 -- silver.data_quality_issues
 --
--- Captures all records from bronze that failed validation rules during
--- the bronze → silver transformation. Each row stores the original
--- values alongside a descriptive error type for later analysis.
+-- Menangkap semua data dari bronze yang gagal aturan validasi selama
+-- transformasi bronze → silver. Setiap baris menyimpan nilai asli
+-- beserta tipe error deskriptif untuk analisis selanjutnya.
 -- ------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS silver.data_quality_issues (
     issue_id             BIGSERIAL PRIMARY KEY,

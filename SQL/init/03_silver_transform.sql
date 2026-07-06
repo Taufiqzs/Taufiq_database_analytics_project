@@ -1,33 +1,35 @@
 -- ==========================================================================
--- 03_silver_transform.sql — Bronze → Silver Transformation
+-- 03_silver_transform.sql — Transformasi Bronze → Silver
 --
--- Purpose:
---   Transforms raw bronze data into clean, validated silver-layer tables.
---   This script performs three major operations:
+-- Tujuan:
+--   Mentransformasi data mentah bronze menjadi tabel layer silver yang
+--   bersih dan tervalidasi. Skrip ini melakukan tiga operasi utama:
 --
---   1. Loads and cleans the taxi zone reference data (silver.taxi_zones).
---   2. Validates every bronze trip record against quality rules; rejected
---      records are logged in silver.data_quality_issues.
---   3. Inserts valid, cleaned trips into silver.taxi_trips_cleaned with
---      pre-computed derived columns (date, hour, day name, time period,
---      duration, payment label).
+--   1. Memuat dan membersihkan data referensi zona taksi (silver.taxi_zones).
+--   2. Memvalidasi setiap record trip bronze terhadap aturan kualitas;
+--      record yang ditolak dicatat di silver.data_quality_issues.
+--   3. Menyisipkan trip yang valid dan bersih ke silver.taxi_trips_cleaned
+--      dengan kolom turunan yang telah dihitung (tanggal, jam, nama hari,
+--      periode waktu, durasi, label pembayaran).
 --
--- Idempotent: Truncates silver tables at the start so re-running is safe.
+-- Idempoten: Memotong (truncate) tabel silver di awal sehingga aman
+-- untuk dijalankan ulang.
 -- ==========================================================================
 
 -- ------------------------------------------------------------------
--- Step 0: Clear existing silver data (idempotent re-run support)
+-- Langkah 0: Hapus data silver yang ada (dukungan idempoten untuk
+-- dijalankan ulang)
 -- ------------------------------------------------------------------
 TRUNCATE TABLE silver.data_quality_issues RESTART IDENTITY;
 TRUNCATE TABLE silver.taxi_trips_cleaned RESTART IDENTITY CASCADE;
 TRUNCATE TABLE silver.taxi_zones CASCADE;
 
 -- ------------------------------------------------------------------
--- Step 1: Load clean zone reference data
+-- Langkah 1: Memuat data referensi zona yang bersih
 --
--- Deduplicates and cleans the raw zone CSV. Empty or NULL string values
--- are replaced with 'Unknown'. Only records with a non-NULL location_id
--- are kept.
+-- Menduplikasi dan membersihkan CSV zona mentah. Nilai string kosong
+-- atau NULL diganti dengan 'Unknown'. Hanya record dengan location_id
+-- tidak NULL yang disimpan.
 -- ------------------------------------------------------------------
 INSERT INTO silver.taxi_zones (location_id, borough, zone, service_zone)
 SELECT DISTINCT
@@ -39,20 +41,20 @@ FROM bronze.raw_taxi_zones
 WHERE location_id IS NOT NULL;
 
 -- ------------------------------------------------------------------
--- Step 2: Validate bronze trips and log quality issues
+-- Langkah 2: Validasi trip bronze dan catat masalah kualitas
 --
--- The CTE 'raw_checks' applies a CASE expression that assigns an
--- error_type to each record that violates a business rule. Records
--- that pass all checks get error_type = NULL and are excluded from the
--- INSERT into silver.data_quality_issues.
+-- CTE 'raw_checks' menggunakan ekspresi CASE yang memberikan error_type
+-- pada setiap record yang melanggar aturan bisnis. Record yang lolos
+-- semua pemeriksaan mendapat error_type = NULL dan tidak dimasukkan ke
+-- silver.data_quality_issues.
 --
--- Validation rules:
---   - Both pickup & dropoff datetimes must be present.
---   - Dropoff must occur after pickup (positive duration).
---   - passenger_count, trip_distance must be > 0.
---   - fare_amount, tip_amount, total_amount must be >= 0.
---   - Pickup and dropoff location IDs must reference valid zones.
---   - Pickup datetime must fall within January 2026.
+-- Aturan validasi:
+--   - pickup & dropoff datetime harus ada.
+--   - Dropoff harus setelah pickup (durasi positif).
+--   - passenger_count, trip_distance harus > 0.
+--   - fare_amount, tip_amount, total_amount harus >= 0.
+--   - ID lokasi pickup dan dropoff harus merujuk ke zona yang valid.
+--   - Pickup datetime harus dalam rentang Januari 2026.
 -- ------------------------------------------------------------------
 WITH raw_checks AS (
     SELECT
@@ -111,22 +113,22 @@ FROM raw_checks
 WHERE error_type IS NOT NULL;
 
 -- ------------------------------------------------------------------
--- Step 3: Insert validated, cleaned trips
+-- Langkah 3: Menyisipkan trip yang tervalidasi dan bersih
 --
--- Only records that passed all validation checks (the inverse of the
--- raw_checks CTE above) are inserted. The SELECT enriches each row
--- with derived columns:
+-- Hanya record yang lolos semua pemeriksaan validasi (kebalikan dari
+-- CTE raw_checks di atas) yang dimasukkan. SELECT memperkaya setiap
+-- baris dengan kolom turunan:
 --
---   - pickup_date        : Date extracted from pickup_datetime.
---   - pickup_hour        : Hour (0–23).
---   - pickup_day_name    : English day name (e.g. 'Monday').
---   - is_weekend         : TRUE if ISODOW is 6 (Sat) or 7 (Sun).
+--   - pickup_date        : Tanggal yang diekstrak dari pickup_datetime.
+--   - pickup_hour        : Jam (0–23).
+--   - pickup_day_name    : Nama hari dalam Bahasa Inggris (mis. 'Monday').
+--   - is_weekend         : TRUE jika ISODOW 6 (Sab) atau 7 (Min).
 --   - time_period        : 'Morning' (5–10), 'Afternoon' (11–15),
 --                          'Evening' (16–20), 'Night' (21–4).
---   - trip_duration_minutes : Duration in minutes (rounded to 2 decimals).
---   - payment_label      : Human-readable payment method description.
+--   - trip_duration_minutes : Durasi dalam menit (dibulatkan 2 desimal).
+--   - payment_label      : Deskripsi metode pembayaran yang mudah dibaca.
 --
--- Duplicates are silently ignored via ON CONFLICT DO NOTHING.
+-- Duplikat diabaikan secara diam-diam melalui ON CONFLICT DO NOTHING.
 -- ------------------------------------------------------------------
 WITH valid_rows AS (
     SELECT
