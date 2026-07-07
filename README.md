@@ -31,11 +31,7 @@ taufiq_database_analytics/
 │   ├── database_analytics_erd.drawio
 │   ├── database_analytics_erd.png
 │   ├── erd.md
-│   ├── insight_report.md
-│   ├── daily_trip_summary_*.html
-│   ├── ranked_zones_*.html
-│   ├── zone_duration_*.html
-│   └── zone_performance_summary_*.html
+│   └── insight_report.md
 ├── SQL/
 │   ├── init/
 │   │   ├── 01_schema.sql
@@ -58,7 +54,7 @@ taufiq_database_analytics/
 ├── docker-compose.yaml
 ├── requirements.txt
 └── README.md
-```
+``\
 
 ## Data Source
 
@@ -221,8 +217,6 @@ File query utama:
 - `SQL/queries/01_business_questions.sql` — 11 query bisnis fundamental
 - `SQL/queries/02_window_analysis.sql` — 10 query window function lanjutan
 - `SQL/queries/03_transaction_demo.sql` — Demonstrasi transaksi database
-
-Hasil ekspor analisis tersedia di folder `Documentation/` dalam format HTML.
 
 ## Assumptions and Notes
 
